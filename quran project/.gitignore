@@ -1,0 +1,42 @@
+# Ignore the virtual environment
+menv/
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment configuration files
+.env
+*.env
+
+# Ignore dataset files
+*.csv
+*.xlsx
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore compiled Python files
+*.egg-info/
+*.eggs/
+*.manifest
+*.spec
+
+# Ignore log files
+logs/
+*.log
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore temporary files
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

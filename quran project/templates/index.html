@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quranic Verse Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-200">
+    <!-- Container -->
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
+            <h1 class="text-3xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6">
+                🔍 AI Quranic Verse Finder
+            </h1>
+
+            <!-- Search Form -->
+            <form id="searchForm" method="post" class="flex flex-col sm:flex-row items-center gap-4">
+                <input id="searchInput" type="text" name="query" placeholder="Enter a keyword..."
+                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    onkeyup="fetchSuggestions()" required>
+                <button type="submit"
+                    class="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                    Search
+                </button>
+                <button type="button" onclick="clearSearch()"
+                    class="w-full sm:w-auto bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                    Clear
+                </button>
+            </form>
+
+            <!-- Suggestions Section -->
+            <div id="suggestionsContainer" class="mt-4">
+                <div id="suggestionsList" class="mt-4 space-y-4"></div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsContainer" class="mt-8">
+                {% if results %}
+                <h2 id="resultsHeader" class="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                    📖 Found {{ results|length }} verses containing "{{ query }}"
+                </h2>
+                <div id="resultsList" class="mt-4 space-y-6">
+                    {% for verse in results %}
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 border-l-4 border-blue-500 rounded-lg shadow-sm cursor-pointer"
+                        onclick="selectVerse({{ loop.index0 }})">
+                        <p class="text-blue-700 dark:text-blue-400 font-semibold">
+                            📌 Surah {{ verse['Surah'] }}, Ayah {{ verse['Ayat'] }}
+                        </p>
+                        <p class="text-gray-800 dark:text-gray-200 text-lg mt-2">
+                            🕌 Arabic: {{ verse['Arabic'] }}
+                        </p>
+                        <p class="text-gray-600 dark:text-gray-300 mt-2">
+                            📜 <strong>English Translation:</strong> {{ verse['Translation1'] }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% elif query %}
+                <p id="noResults" class="text-center text-gray-500 dark:text-gray-400 mt-6">
+                    No matching verses found for "{{ query }}".
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Selected Verse Details -->
+            {% if selected_verse %}
+            <div class="mt-8 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
+                <h3 class="text-2xl font-semibold text-blue-600 dark:text-blue-400">Selected Verse</h3>
+                <p class="text-blue-700 dark:text-blue-400 font-semibold">
+                    📌 Surah {{ selected_verse['Surah'] }}, Ayah {{ selected_verse['Ayat'] }}
+                </p>
+                <p class="text-gray-800 dark:text-gray-200 text-lg mt-2">
+                    🕌 Arabic: {{ selected_verse['Arabic'] }}
+                </p>
+                <p class="text-gray-600 dark:text-gray-300 mt-2">
+                    📜 <strong>English Translation:</strong> {{ selected_verse['Translation1'] }}
+                </p>
+                <p class="text-gray-500 dark:text-gray-400 mt-2 italic">
+                    📖 <strong>Tafseer:</strong> {{ selected_verse['Tafaseer1'] }}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Fetch suggestions based on user input
+        function fetchSuggestions() {
+            let query = document.getElementById("searchInput").value;
+            if (query.length > 2) {  // Only fetch suggestions when the query length is more than 2
+                fetch(`/suggestions?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsList = document.getElementById("suggestionsList");
+                        suggestionsList.innerHTML = '';  // Clear previous suggestions
+                        data.suggestions.forEach((suggestion, index) => {
+                            let suggestionCard = document.createElement("div");
+                            suggestionCard.classList.add("bg-gray-50", "dark:bg-gray-700", "p-4", "rounded-lg", "shadow-sm", "cursor-pointer");
+                            suggestionCard.innerHTML = `
+                                <p class="text-blue-700 dark:text-blue-400 font-semibold">
+                                    📌 Surah ${suggestion['Surah']}, Ayah ${suggestion['Ayat']}
+                                </p>
+                                <p class="text-gray-800 dark:text-gray-200 text-lg mt-2">
+                                    🕌 Arabic: ${suggestion['Arabic']}
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-300 mt-2">
+                                    📜 English: ${suggestion['Translation1']}
+                                </p>
+                            `;
+                            suggestionCard.onclick = () => selectVerseFromSuggestion(suggestion);
+                            suggestionsList.appendChild(suggestionCard);
+                        });
+                    });
+            }
+        }
+
+        // Display selected verse details from the suggestion
+        function selectVerseFromSuggestion(verse) {
+            let selectedVerseContainer = document.getElementById('resultsContainer');
+            selectedVerseContainer.innerHTML = `
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
+                    <h3 class="text-2xl font-semibold text-blue-600 dark:text-blue-400">Selected Verse</h3>
+                    <p class="text-blue-700 dark:text-blue-400 font-semibold">
+                        📌 Surah ${verse['Surah']}, Ayah ${verse['Ayat']}
+                    </p>
+                    <p class="text-gray-800 dark:text-gray-200 text-lg mt-2">
+                        🕌 Arabic: ${verse['Arabic']}
+                    </p>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">
+                        📜 <strong>English Translation:</strong> ${verse['Translation1']}
+                    </p>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2 italic">
+                        📖 <strong>Tafseer:</strong> ${verse['Tafaseer1']}
+                    </p>
+                </div>
+            `;
+        }
+
+        // Clear search input and results
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("resultsContainer").innerHTML = "";
+            document.getElementById("suggestionsList").innerHTML = "";
+        }
+    </script>
+</body>
+
+</html>
