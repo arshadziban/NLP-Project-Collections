@@ -9,7 +9,6 @@ This project is an **AI-powered Quranic verse search tool** that allows users to
 - 🖥️ **User-friendly web interface** built with Flask and Tailwind CSS
 - 🔄 **Interactive search suggestions and result selection**
 
-
 ## 📌 Usage
 - Enter a **keyword or phrase** in the search bar.
 - View the **best-matched verse**
@@ -20,4 +19,7 @@ This project is an **AI-powered Quranic verse search tool** that allows users to
 - **Machine Learning** (TF-IDF & Cosine Similarity)
 - **Frontend:** HTML, Tailwind CSS, JavaScript
 - **Dataset:** Kaggle (Quran English Translation & Tafseer)
+
+## 📸 Web App Screenshot
+![Web App Screenshot](image.png)
 
