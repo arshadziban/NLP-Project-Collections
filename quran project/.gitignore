@@ -12,10 +12,6 @@ __pycache__/
 .env
 *.env
 
-# Ignore dataset files
-*.csv
-*.xlsx
-
 # Ignore IDE/editor files
 .vscode/
 .idea/
