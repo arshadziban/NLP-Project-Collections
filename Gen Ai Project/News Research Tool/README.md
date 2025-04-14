@@ -1,6 +1,6 @@
 # News Research Tool
 
-![UI Preview](image.png)
+![UI Preview](img.png)
 
 A user-friendly app for researching financial and stock market news.  
 Just input article URLs and ask questions — get answers with relevant sources in seconds.
